@@ -1,0 +1,13 @@
+name: celestial_peace_nf_core
+description: >-
+  Celestial Peace: Never Forget — the spaced-repetition (SM-2) memory engine
+  that consolidates a user's tacit recall of a Great Wall fractal setup. Pure
+  Dart, UI-free, FFI-free, clock-injected (no wall-clock reads).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.24.0
