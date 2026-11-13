@@ -31,8 +31,7 @@ void main() {
 
     test('a lucky guess / giving up forces Again despite success', () {
       expect(
-        honestGrade(
-            succeeded: true, luckyOrGaveUp: true, proposed: Grade.good),
+        honestGrade(succeeded: true, luckyOrGaveUp: true, proposed: Grade.good),
         Grade.again,
       );
     });

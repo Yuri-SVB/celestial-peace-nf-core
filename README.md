@@ -7,7 +7,10 @@ FFI-free and clock-injected.
 Part of [Great Wall](https://github.com/Yuri-SVB/Great-Wallet), which pins
 this library to a compatible commit. This repository has no submodules.
 
-**Status:** In development — Step 1 (scheduler core) implemented.
+**Status:** In development — Step 2 implemented: the conservative SM-2
+scheduler, a card per memorised map with its landmark cues (graded once no
+stop is shown), consolidation, reminders, and the deck with its progress and
+JSON form. Which maps, and in what order, is the user's choice.
 
 **Documentation:** [great-wall-docs/celestial-peace-nf-core](https://github.com/Yuri-SVB/great-wall-docs/tree/main/celestial-peace-nf-core)
 — design, architecture and threat model live there, not here.

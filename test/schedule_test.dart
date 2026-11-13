@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 void main() {
   final DateTime day0 = DateTime(2026, 1, 1);
 
-  MemCard point() => const MemSchedule(_FixedClock())
-      .freshCard(id: 'point:0', kind: CardKind.point);
+  /// A fresh fact card: always graded, so the SM-2 ladder applies as is.
+  MemCard point() => MemCard.fact('m');
 
   group('interval ladder + per-grade multipliers', () {
     test('Good: 1d -> 6d -> round(6*EF), EF steady at 2.5', () {
@@ -63,7 +63,7 @@ void main() {
       for (int i = 0; i < 20; i++) {
         c = s.grade(c, Grade.hard);
       }
-      expect(c.easeFactor, MemSchedule.minEase);
+      expect(c.easeFactor, Sm2Params.defaultMinEase);
     });
   });
 
@@ -98,12 +98,13 @@ void main() {
               due: DateTime(2025, 12, 31), repetitions: 1, intervalDays: 1);
       final MemCard future = const MemCard(id: 'point:1', kind: CardKind.point)
           .copyWith(due: DateTime(2026, 1, 6), repetitions: 1, intervalDays: 5);
-      final MemCard fresh = s.freshCard(id: 'point:2', kind: CardKind.point);
+      const MemCard fresh = MemCard(id: 'point:2', kind: CardKind.point);
 
       final ReviewQueue q0 = s.queue(<MemCard>[future, overdue, fresh]);
       expect(q0.due.map((MemCard c) => c.id).toList(),
           <String>['point:2', 'point:0'],
-          reason: 'new (null due) first, then the overdue one; future excluded');
+          reason:
+              'new (null due) first, then the overdue one; future excluded');
 
       clock.advance(const Duration(days: 5)); // now 2026-01-06
       final ReviewQueue q1 = s.queue(<MemCard>[future, overdue, fresh]);
@@ -113,41 +114,14 @@ void main() {
     });
   });
 
-  group('freshCard + deck builder', () {
-    test('freshCard is new and due now', () {
+  group('fresh cards', () {
+    test('a fresh card is new and due now', () {
       final MemCard c = point();
       expect(c.isNew, isTrue);
       expect(c.isDue(day0), isTrue);
       expect(c.intervalDays, 0);
       expect(c.repetitions, 0);
-      expect(c.easeFactor, 2.5);
-    });
-
-    test('buildDeck: N point cards + the fact cards', () {
-      final List<MemCard> deck = buildDeck(
-        stageCount: 3,
-        exportSalts: <String>['signing-1'],
-        misc: <String>['anniversary'],
-      );
-      final List<MemCard> points =
-          deck.where((MemCard c) => c.kind == CardKind.point).toList();
-      final List<String> facts = deck
-          .where((MemCard c) => c.kind == CardKind.fact)
-          .map((MemCard c) => c.factId)
-          .toList();
-      expect(points.length, 3);
-      expect(points.map((MemCard c) => c.stageIndex).toList(), <int>[0, 1, 2]);
-      expect(facts, containsAll(<String>['m', 'N', 'D', 'salt', 'provenance']));
-      expect(facts, contains('export:signing-1'));
-      expect(facts, contains('misc:anniversary'));
+      expect(c.easeFactor, Sm2Params.defaultInitialEase);
     });
   });
-}
-
-/// A trivial fixed clock for constructing a bare [MemSchedule] where time is
-/// irrelevant (only `freshCard`, which doesn't read the clock, is used).
-class _FixedClock implements Clock {
-  const _FixedClock();
-  @override
-  DateTime now() => DateTime.utc(2000);
 }
