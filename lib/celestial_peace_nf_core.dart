@@ -9,8 +9,9 @@
 /// Here: the conservative SM-2 scheduler and its parameters, honest grading,
 /// a card per memorised map with its landmark cues (an attempt is graded only
 /// once no stop is shown), consolidation, reminders, and the deck with its
-/// progress and JSON form. The review session and the post-graduation bundles
-/// are later steps.
+/// progress and JSON form; and the review session's rules: which attempts
+/// are graded and which are practice ([ReviewSession]). The post-graduation
+/// bundles are a later step.
 ///
 /// Spec: great-wall-docs `next-steps/cpnf-step1-scheduler.md`,
 /// `cpnf-lifecycle-and-deck.md` and `cpnf-maintenance-bundles.md` §1.
@@ -22,4 +23,5 @@ export 'src/cues.dart';
 export 'src/deck.dart';
 export 'src/grading.dart';
 export 'src/params.dart';
+export 'src/review.dart';
 export 'src/schedule.dart';
