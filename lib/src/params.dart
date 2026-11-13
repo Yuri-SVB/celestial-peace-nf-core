@@ -66,6 +66,18 @@ class ConsolidationParams {
   final int minRepetitions;
 }
 
+/// The forgetting curve laid over SM-2's intervals (cpnf-lifecycle-and-deck.md
+/// §3): the chance of recalling a card falls as `R(t) = r*^(t / I)`, `t` the
+/// time since its last review and `I` its interval, so it is `r*` when due.
+class ForgettingParams {
+  const ForgettingParams({this.retentionAtDue = defaultRetentionAtDue});
+
+  /// `r*`: the chance of recalling a card when it falls due.
+  static const double defaultRetentionAtDue = 0.9;
+
+  final double retentionAtDue;
+}
+
 /// Reminder cadence (cpnf-maintenance-bundles.md §1): at least this often,
 /// sooner when a graded card falls due.
 class ReminderParams {

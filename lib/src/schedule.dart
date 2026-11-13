@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'card.dart';
 import 'clock.dart';
 import 'params.dart';
@@ -30,12 +32,37 @@ class MemSchedule {
     this.sm2 = const Sm2Params(),
     this.consolidation = const ConsolidationParams(),
     this.reminders = const ReminderParams(),
+    this.forgetting = const ForgettingParams(),
   });
 
   final Clock clock;
   final Sm2Params sm2;
   final ConsolidationParams consolidation;
   final ReminderParams reminders;
+  final ForgettingParams forgetting;
+
+  static const int _hoursPerDay = 24;
+
+  /// When [card] was last graded: its due date less its interval. Null for a
+  /// card never graded.
+  DateTime? lastReview(MemCard card) {
+    final DateTime? due = card.due;
+    if (due == null || card.intervalDays <= 0) return null;
+    return due.subtract(Duration(days: card.intervalDays));
+  }
+
+  /// The chance of recalling [card] at [at], by the forgetting curve
+  /// ([ForgettingParams]): 1 at its last review, `r*` when due, falling
+  /// after. Null for a card never graded. No clock read.
+  double? recall(MemCard card, DateTime at) {
+    final DateTime? last = lastReview(card);
+    if (last == null) return null;
+    final double days = math.max(0, at.difference(last).inMinutes) /
+        Duration.minutesPerHour /
+        _hoursPerDay;
+    return math.pow(forgetting.retentionAtDue, days / card.intervalDays)
+        .toDouble();
+  }
 
   // SM-2's E-Factor update, `EF + (base - (top-q)(linear + (top-q)quadratic))`,
   // and its passing qualities: the reference's constants.

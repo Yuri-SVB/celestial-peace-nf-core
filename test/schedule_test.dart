@@ -124,4 +124,26 @@ void main() {
       expect(c.easeFactor, Sm2Params.defaultInitialEase);
     });
   });
+
+  group('forgetting curve', () {
+    test('recall is 1 at the last review, r* when due, lower after', () {
+      final MemSchedule s = MemSchedule(FakeClock(day0));
+      final MemCard c = s.grade(point(), Grade.good); // due in 1 day
+      final DateTime last = s.lastReview(c)!;
+      expect(last, day0);
+      expect(s.recall(c, last), 1);
+      expect(s.recall(c, c.due!),
+          closeTo(ForgettingParams.defaultRetentionAtDue, 1e-9));
+      final double later = s.recall(c, c.due!.add(const Duration(days: 3)))!;
+      expect(later, lessThan(ForgettingParams.defaultRetentionAtDue));
+      // Before the last review it does not exceed 1.
+      expect(s.recall(c, last.subtract(const Duration(days: 1))), 1);
+    });
+
+    test('a card never graded has no curve', () {
+      final MemSchedule s = MemSchedule(FakeClock(day0));
+      expect(s.lastReview(point()), isNull);
+      expect(s.recall(point(), day0), isNull);
+    });
+  });
 }
